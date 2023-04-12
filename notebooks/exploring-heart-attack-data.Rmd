@@ -18,25 +18,45 @@ head(heart_data)
 class(heart_data)
 ```
 ```{r}
+# number of rows and columns
 dim(heart_data)
 ```
 
 ```{r}
-dim(heart_data)
+# structure of the data frame
+str(heart_data)
+
+# int and num are numerical variables.
 ```
 
 ```{r}
-dim(heart_data)
+# factorise the variables that should be categorised
+
+heart_data$sex <- factor(heart_data$sex)
+heart_data$cp <- factor(heart_data$cp)
+heart_data$fbs <- factor(heart_data$fbs)
+heart_data$restecg <- factor(heart_data$restecg)
+heart_data$exang <- factor(heart_data$exang)
+heart_data$target <- factor(heart_data$target)
 ```
 
 ```{r}
-dim(heart_data)
+# check the structure of the data frame again and make sure they are factorised
+
+str(heart_data)
 ```
 
 ```{r}
-dim(heart_data)
+# number of patients with heart disease
+
+summary(heart_data$target)
 ```
 
 ```{r}
-dim(heart_data)
+# number of patients with heart disease by gender
+
+table(heart_attack_data$sex, heart_attack_data$target)
+```
+```{r}
+# tidy up the table
 ```
