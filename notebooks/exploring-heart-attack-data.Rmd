@@ -59,4 +59,23 @@ table(heart_attack_data$sex, heart_attack_data$target)
 ```
 ```{r}
 # tidy up the table
+heart_disease_dist <- as.data.frame(table(heart_attack_data$sex, heart_attack_data$target))
+colnames(heart_disease_dist) <- c("Gender", "Target", "Frequency")
+heart_disease_dist
+```
+```{r}
+# convert the 0s to map to female and 1st to male
+library(dplyr)
+heart_disease_dist >%>
+  mutate()
+heart_disease_dist
+```
+
+```{r}
+library(tidyverse)
+ggplot(heart_disease_dist, aes(x=Gender, y=Frequency, fill=Target)) +
+  geom_col() +
+  labs(title="Distribution of Heart Disease by Gender")
+
+# reference: https://rpubs.com/murraylax/viscrosstabs
 ```
