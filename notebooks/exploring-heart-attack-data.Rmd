@@ -66,13 +66,20 @@ heart_disease_dist
 ```{r}
 # convert the 0s to map to female and 1st to male
 library(dplyr)
-heart_disease_dist >%>
-  mutate()
+heart_disease_dist <- heart_disease_dist %>%
+  mutate(Gender = ifelse(Gender == 0, "Female", "Male"))
+heart_disease_dist
+```
+```{r}
+# convert the 0s to map to female and 1st to male
+heart_disease_dist <- heart_disease_dist %>%
+  mutate(Target = ifelse(Target == 0, "No Heart Disease", "Heart Disease"))
 heart_disease_dist
 ```
 
 ```{r}
 library(tidyverse)
+
 ggplot(heart_disease_dist, aes(x=Gender, y=Frequency, fill=Target)) +
   geom_col() +
   labs(title="Distribution of Heart Disease by Gender")
