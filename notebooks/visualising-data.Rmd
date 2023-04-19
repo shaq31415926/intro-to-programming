@@ -1,0 +1,171 @@
+---
+title: "Visualising Data"
+---
+
+```{r}
+# read the csv file and save as a variable called heart_data
+heart_data <- read.csv("../data/heart_attack_data.csv")
+```
+
+
+```{r}
+# preview the data
+head(heart_data)
+```
+
+
+```{r}
+# number of rows and columns
+dim(heart_data)
+```
+
+```{r}
+# structure of the data frame
+str(heart_data)
+
+# int and num are numerical variables ut sex, cp etc have categories 
+```
+
+```{r}
+# factorise the variables that should be categorised
+
+heart_data$sex <- factor(heart_data$sex)
+heart_data$cp <- factor(heart_data$cp)
+heart_data$fbs <- factor(heart_data$fbs)
+heart_data$restecg <- factor(heart_data$restecg)
+heart_data$exang <- factor(heart_data$exang)
+heart_data$target <- factor(heart_data$target)
+```
+
+```{r}
+# structure of the data frame
+str(heart_data)
+```
+
+
+```{r}
+library(tidyverse)
+
+# start with defining the x and y axis
+# look at the relationship between age and chol
+
+heart_data %>%
+  ggplot(aes (x = age, y = chol))
+```
+
+```{r}
+# plot a scatter plot to look at relationship between age and chlor
+
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    geom_point()
+
+```
+
+```{r}
+# you could also plot a scatter plot by using the code like this but I prefer the syntax above - you tell me!
+ggplot(data = heart_data) + 
+  geom_point(aes (x = age, y = chol))
+
+# questions: can we draw any patterns about the relationship between chol and age?
+```
+
+```{r}
+# plot the scatter plot showing the relationship between age and chol
+
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    geom_point(aes (color = sex))
+```
+
+```{r}
+# optional: if you want to you can replace the 0 and 1s with female and male
+
+# convert the 0s to map to female and 1st to male
+heart_data <- heart_data %>%
+  mutate(sex = ifelse(sex == 0, "Female", "Male"))
+```
+
+```{r}
+# plot the scatter plot showing the relationship between age and chol
+
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    geom_point(aes (color = sex), na.rm=TRUE)
+
+# questions: can we draw any patterns about the relationship between chol, age and gender?
+```
+```{r}
+# add a title to your graph
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    geom_point(aes (color = sex), na.rm=TRUE) +
+      ggtitle("Relationship between age, chol and gender")
+```
+
+
+```{r}
+# you can format the scatter plot , play with the bubble sizes
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    ggtitle("Relationship between age, chol and gender") + 
+    geom_point(aes (color = sex), size = 2, na.rm=TRUE)
+```
+
+
+```{r}
+# you can format the scatter plot , format the legend
+
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    geom_point(aes (color = sex), size = 2, na.rm=TRUE) +
+      ggtitle("Relationship between age, chol and gender") +
+      theme(legend.title = element_text(color = "blue", size = 14),
+            legend.text = element_text(color = "red", size = 10))
+```
+```{r}
+# Activity: Visualise the relationship between age, chol and heart disease
+
+```
+
+
+
+```{r}
+# Visualise the relationship between age, chol and heart disease
+
+heart_data <- heart_data %>%
+  mutate(target_transformed = ifelse(target == 0, "No Heart Disease", "Heart Disease"))
+
+heart_data %>%
+  ggplot(aes (x = age, y = chol)) + 
+    geom_point(aes (color = target_transformed), na.rm=TRUE) +
+    ggtitle("Relationship between age, chol and heart disease")
+```
+
+```{r}
+# plot a histogram showing the distribution of age 
+heart_data %>%
+    ggplot(aes(x=age)) + 
+     geom_histogram() 
+```
+```{r}
+# plot a histogram showing the distribution of age 
+# adjsuting the binwidth
+
+heart_data %>%
+    ggplot(aes(x=age)) + 
+     geom_histogram(binwidth=5) +
+      ggtitle("Histogram with bin size = 5")
+```
+
+```{r}
+# adjust the colours of the histogram
+heart_data %>% 
+    ggplot(aes(x=age)) + 
+        geom_histogram(binwidth=5, fill="blue", color="pink", alpha=0.9) +
+        ggtitle("Histogram with bin size = 5") +
+        theme(plot.title = element_text(size=15))
+```
+```{r}
+# activity: Visualise chol as a histogram
+```
