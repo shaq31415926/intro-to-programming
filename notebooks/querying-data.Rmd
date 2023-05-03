@@ -1,0 +1,123 @@
+---
+title: "Using SQL to Query Data"
+---
+
+```{r}
+install.packages("DBI")
+install.packages("RSQLite")
+```
+
+```{r}
+# connecting to a database that we have currently stored in our data folder
+
+library(DBI)
+
+filename <- "../data/prod_sample.db"
+my_connection <- dbConnect(RSQLite::SQLite(),
+                dbname = filename)
+my_connection
+```
+
+
+```{r}
+## Check what tables exist in this database
+dbListTables(my_connection)
+
+# we have two tables that exist in our database
+```
+
+
+```{sql connection=my_connection}
+/* sql query to view the first ten rows of the online_retail_history table - be sure to pass in the connection */
+select *
+from online_retail_history
+limit 10
+```
+
+```{sql connection=my_connection}
+/* write a sql query to view the first five rows of the stock_description table - be sure to pass in the connection */
+select *
+from stock_description
+limit 5
+```
+
+```{sql connection=my_connection}
+/* write a sql query to count how many rows the online_retail_history table contains */
+select count(*) as number_rows
+from online_retail_history 
+```
+
+```{sql connection=my_connection}
+/* write a sql query to count how many rows the stock_description table contains */
+select count(*) as number_rows
+from stock_description
+```
+
+
+```{sql connection=my_connection}
+/* write a sql query to calculate the total number of items sold*/
+select sum(quantity) as total_quantity
+from online_retail_history
+
+/*5 million items sold*/
+```
+
+```{sql connection=my_connection}
+/* write a sql query to calculate the average price of products sold*/
+select avg(Price) as avg_price
+from online_retail_history
+
+/*average price of item is 4.6 pounds*/
+```
+```{sql connection=my_connection}
+/* write a sql query to calculate the min price of products sold*/
+select min(Price) as min_price
+from online_retail_history
+where Price > 0
+/*minimum price of item is negative... what?!*/
+```
+```{sql connection=my_connection}
+/* write a sql query to calculate the max price of products sold*/
+select max(Price) as max_price
+from online_retail_history
+```
+
+```{sql connection=my_connection}
+/* write a sql query to calculate the min, max and average price of products sold*/
+select min(Price) as min_price,
+       max(Price) as max_price,
+       avg(Price) as avg_price
+from online_retail_history
+```
+
+
+```{sql connection=my_connection}
+/* write a sql query to calculate the number of unique customers*/
+select count(distinct CustomerID) as number_unique_customers
+from online_retail_history
+```
+```{sql connection=my_connection}
+/* write a sql query to calculate the number of unique Invoices*/
+select count(distinct Invoice) as number_invoices
+from online_retail_history
+```
+```{sql connection=my_connection}
+/* write a sql query to calculate the number of unique stock codes in the online_retail_history table*/
+select count(distinct StockCode) as number_unique_stocks
+from online_retail_history
+```
+
+```{sql connection=my_connection}
+/* write a sql query to calculate the number of unique stock codes in the online_retail_history table*/
+select count(distinct StockCode) as number_unique_stocks
+from stock_description
+
+/*why would the different tables contain different stock codes?*/
+```
+
+```{r}
+dbDisconnect(my_connection)
+```
+
+
+
