@@ -52,17 +52,15 @@ from stock_description
 ```{sql connection=my_connection}
 /* write a sql query to calculate the min and max invoice*/
 select min(InvoiceDate) as min_invoice_date,
-       max(InvoiceDate) as min_invoice_date
+      max(InvoiceDate) as min_invoice_date
 from online_retail_history
-
-/*5 million items sold*/
 ```
 
 ```{sql connection=my_connection}
 /* write a sql query to calculate the average price of products sold*/
 select avg(Price) as avg_price
 from online_retail_history
-where country = 'United Kingdom'
+where Country = 'United Kingdom'
 
 /*average price of item is 4.5 pounds*/
 ```
@@ -111,7 +109,7 @@ from online_retail_history
 ```
 
 ```{sql connection=my_connection}
-/* write a sql query to calculate the number of unique stock codes in the online_retail_history table*/
+/* write a sql query to calculate the number of unique stock codes in the stock_description table*/
 select count(distinct StockCode) as number_unique_stocks
 from stock_description
 
@@ -119,12 +117,12 @@ from stock_description
 ```
 ```{sql connection=my_connection}
 /* write a sql query to count stocks with the description ? */
-select count(Description)
+select count(*) as descriptions_w_question_mark
 from stock_description
 where Description = "?"
 ```
 ```{sql connection=my_connection}
-/* write a sql query to count invoices with negative price and quantity */
+/* write a sql query to count invoices with negative price or quantity */
 select count(distinct Invoice) as number_invoices
 from online_retail_history
 where quantity < 0 or price < 0
@@ -136,14 +134,29 @@ select StockCode,
        sum(Quantity) as total_purchased
 from online_retail_history
 group by StockCode
+```
+```{sql connection=my_connection}
+select StockCode,
+       sum(Quantity) as total_purchased
+from online_retail_history
+group by StockCode
 order by total_purchased desc
 limit 1
 ```
+
+
+
+
 ```{sql connection=my_connection}
 /* write a sql query to calculate the number of unique stock codes in the online_retail_history table*/
 select Description
 from stock_description
 where StockCode = "22197"
+```
+```{sql connection=my_connection}
+select *
+from online_retail_history
+where StockCode = "23843"
 ```
 
 ```{r}
