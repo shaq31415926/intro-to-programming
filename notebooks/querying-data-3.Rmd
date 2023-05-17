@@ -1,0 +1,165 @@
+---
+title: "Using SQL to Query Data"
+---
+
+```{r}
+# connecting to a database that we have currently stored in our data folder
+
+library(DBI)
+
+filename <- "../data/prod_sample.db"
+my_connection <- dbConnect(RSQLite::SQLite(),
+                dbname = filename)
+my_connection
+```
+
+
+```{r}
+## Check what tables exist in this database
+dbListTables(my_connection)
+
+# we have two tables that exist in our database
+```
+
+
+```{sql connection=my_connection}
+/* sql query to view the first ten rows of the online_retail_history table - be sure to pass in the connection */
+select *
+from online_retail_history
+limit 10
+```
+
+```{sql connection=my_connection}
+/* write a sql query to view the first five rows of the stock_description table - be sure to pass in the connection */
+select *
+from stock_description
+limit 5
+```
+```{sql connection=my_connection}
+/* write a sql query to calculate the number of unique Invoices*/
+select count(distinct Invoice) as number_invoices
+from online_retail_history
+```
+```{sql connection=my_connection}
+/* write a sql query to calculate the min, max and average price of products sold in Germany*/
+select min(Price) as min_price,
+       max(Price) as max_price,
+       avg(Price) as avg_price
+from online_retail_history
+where Country = 'Germany'
+```
+```{sql connection=my_connection}
+/* write a sql query to identify the most expensive stockcode*/
+select distinct StockCode
+from online_retail_history
+where Country = 'Germany'
+and Price = (select max(Price) as max_price
+            from online_retail_history
+            where Country = 'Germany')
+```
+```{sql connection=my_connection}
+/* write a sql query to identify the description of the move expensive stockcode in Germany? */
+select *
+from stock_description
+where StockCode = 'M'
+```
+
+```{sql connection=my_connection}
+/* write a sql query that identifies the top 10 countries with the highest average price of goods sold */
+select Country,
+      avg(Price) as avg_price
+from online_retail_history 
+group by Country
+order by 2 desc
+limit 10
+```
+
+```{sql connection=my_connection}
+/* write a sql query that identifies the country with the most customers */
+select Country,
+      count(distinct CustomerID)
+from online_retail_history 
+group by Country
+order by 2 desc
+limit 1
+```
+```{sql connection=my_connection}
+/* write a sql query that identifies the country with the most customers */
+select Country,
+      count(distinct CustomerID)
+from online_retail_history 
+group by Country
+order by 2 desc
+limit 5
+```
+
+
+```{sql connection=my_connection}
+/* write a sql query that identifies customers and their total spend */
+select CustomerID,
+        sum(quantity * price) as total_spend
+from online_retail_history 
+where CustomerID is not null
+group by CustomerID
+order by 2 desc
+```
+```{sql connection=my_connection}
+/* write a sql query that left joins the stock_description table to the online_retail_history table  */
+select t1.*,
+       t2.Description
+from online_retail_history t1
+left join stock_description t2 on t1.StockCode = t2.StockCode
+```
+```{sql connection=my_connection}
+/* write a sql query that joins the stock_description table to the online_retail_history table  */
+select t1.*,
+       t2.Description
+from online_retail_history t1
+???? stock_description t2 on t1.??? = t2.???
+```
+
+```{sql connection=my_connection}
+/* write a sql query that identifies stock codes with missing description */
+
+select count(distinct t1.StockCode) as missing_descriptions
+from online_retail_history t1
+left join stock_description t2 on t1.StockCode = t2.StockCode
+where t2.Description is null
+```
+```{sql connection=my_connection}
+/* write a sql query that identifies the top 10 selling products */
+
+select t2.Description,
+      sum(t1.quantity) as total_quantity
+from online_retail_history t1
+join stock_description t2 on t1.StockCode = t2.StockCode
+where Description <> '?'
+group by t2.Description
+order by total_quantity desc
+limit 10
+```
+```{sql connection=my_connection}
+
+select cast(strftime('%m', InvoiceDate) as integer) as month,
+                  case cast (strftime('%w', InvoiceDate) as integer)
+                      when 0 then 'Sunday'
+                      when 1 then 'Monday'
+                      when 2 then '???'
+                      when 3 then '???'
+                      when 4 then '???'
+                      when 5 then '???'
+                      else 'Saturday' end as weekday,
+                   sum(Quantity) as number_purchases
+                from online_retail_history
+            where cast(strftime('%Y', InvoiceDate) as integer) = ????
+            group by month, weekday
+            order by month, number_purchases desc
+```
+
+
+```{r}
+dbDisconnect(my_connection)
+```
+
+
+
