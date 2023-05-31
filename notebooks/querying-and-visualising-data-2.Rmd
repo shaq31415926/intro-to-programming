@@ -1,0 +1,132 @@
+---
+title: "Using SQL to Query Data"
+---
+
+```{r}
+# connecting to a database that we have currently stored in our data folder
+
+library(DBI)
+
+filename <- "../data/prod_sample.db"
+my_connection <- dbConnect(RSQLite::SQLite(),
+                dbname = filename)
+my_connection
+``` 
+
+
+```{r}
+## Check what tables exist in this database
+dbListTables(my_connection)
+
+# we have two tables that exist in our database
+```
+
+
+```{sql connection=my_connection}
+/* sql query to view the first ten rows of the online_retail_history table - be sure to pass in the connection */
+select *
+from online_retail_history
+limit 10
+```
+
+```{sql connection=my_connection}
+/* write a sql query that left joins the stock_description table to the online_retail_history table  */
+select t1.*,
+       t2.Description
+from online_retail_history t1
+left join stock_description t2 on t1.StockCode = t2.StockCode
+```
+
+
+```{sql connection=my_connection}
+/* write a sql query that identifies the country with the most customers */
+select Country,
+      count(distinct CustomerID) as number_unique_customers
+from online_retail_history 
+group by Country
+order by 2 desc
+limit 10
+```
+
+```{r}
+# Plot the number of distinct customers per country using sql queries
+
+# import the library
+library(tidyverse)
+
+# write the SQL query in the paste function and store as a variable called query
+query <- paste("
+select Country,
+      count(distinct CustomerID) as number_unique_customers
+from online_retail_history 
+group by Country
+order by 2 desc
+limit 10",
+sep = "" )
+
+# pass your connection and the query to the tbl function and store as a variable
+customers_per_country <- tbl(my_connection, sql(query))
+customers_per_country
+
+```
+
+```{r}
+customers_per_country %>%
+  ggplot(aes(x=reorder(Country, -number_unique_customers), y = number_unique_customers)) +
+    geom_bar(stat = 'identity', color="black", fill="blue") +
+      xlab('Country') +
+        ylab('Number of Unique Customers') +
+          ggtitle("Distribution of Countries by Customers") +
+             theme(axis.text.x = element_text(size = 7))
+```
+
+```{sql connection=my_connection}
+select ?????
+from online_retail_history t1
+join stock_description t2 on t1.StockCode = t2.StockCode
+where Description NOT IN ('?', 'POSTAGE') and
+  cast(strftime('%Y', InvoiceDate) as integer) = 2011
+group by ????
+order by ???? desc
+limit 20
+```
+
+
+```{r}
+# Plot the distribution of best selling products
+
+# write the SQL query in the paste function and store as a variable called query
+query <- paste("
+select t2.Description,
+      sum(t1.quantity) as total_quantity
+from online_retail_history t1
+join stock_description t2 on t1.StockCode = t2.StockCode
+where Description NOT IN ('?', 'POSTAGE') and
+  cast(strftime('%Y', InvoiceDate) as integer) = 2011
+group by t2.Description
+order by total_quantity desc
+limit 20",
+sep = "" )
+
+# pass your connection and the query to the tbl function and store as a variable
+top_products <- tbl(my_connection, sql(query))
+top_products
+
+```
+
+```{r}
+top_products %>%
+  ggplot(aes(x=reorder(Description, -total_quantity), y = total_quantity)) +
+    geom_bar(stat = 'identity', color="white", fill="pink") +
+      xlab('Country') +
+        ylab('Total Sales') +
+          ggtitle("Top 20 Products by Total Sales in 2011") +
+            theme(axis.text.x = element_text(angle = 90, size = 8))
+```
+
+```{r}
+dbDisconnect(my_connection)
+```
+
+
+
